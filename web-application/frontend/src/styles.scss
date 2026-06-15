@@ -1,0 +1,66 @@
+@use "styles/tokens";
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--m-bg-light);
+  color: var(--m-text-ink);
+  font-family: var(--m-font);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+a { color: var(--m-primary-700); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+::selection { background: rgba(138, 180, 248, 0.35); }
+
+// Material Symbols base
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+// App-wide scrollbar
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #5f636844; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #5f636888; }
+
+// Utility
+.m-row { display: flex; align-items: center; }
+.m-col { display: flex; flex-direction: column; }
+.m-spacer { flex: 1 1 auto; }
+.m-mono { font-family: ui-monospace, "SF Mono", Consolas, Menlo, monospace; }
+
+// Responsive helpers
+@media (max-width: 900px) {
+  :root { --m-drawer-w: 100%; }
+}

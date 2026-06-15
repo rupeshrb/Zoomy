@@ -1,0 +1,12 @@
+import { InjectionToken } from '@angular/core';
+
+export interface ApiConfig {
+  baseUrl: string;
+}
+
+export const API_CONFIG = new InjectionToken<ApiConfig>('API_CONFIG');
+
+export const DEFAULT_API_CONFIG: ApiConfig = {
+  // Same machine, Spring Boot on :8080
+  baseUrl: 'http://localhost:8080'
+};

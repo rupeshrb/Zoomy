@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package zoomy.safebrowser.v1;
+
+option java_multiple_files = true;
+option java_package = "com.zoomy.grpc.safebrowser";
+option java_outer_classname = "SafeBrowserProto";
+
+// Control + telemetry channel between the desktop Safe Agent (JavaFX) and the
+// Zoomy backend. The browser SPA keeps using REST + STOMP; only the desktop
+// anti-cheat agent speaks gRPC.
+service SafeBrowserService {
+  // Authenticate the desktop agent to a meeting session (JWT handshake).
+  rpc Connect(ConnectRequest) returns (ConnectResponse);
+
+  // Long-lived bidirectional channel: the agent streams events up
+  // (heartbeat / anti-cheat findings / system insights) and the server
+  // streams host commands down (lockdown / end / warn).
+  rpc Session(stream AgentEvent) returns (stream HostCommand);
+}
+
+message ClientInfo {
+  string os = 1;
+  string os_version = 2;
+  string app_version = 3;
+  string hostname = 4;
+}
+
+message ConnectRequest {
+  string access_token = 1;    // JWT obtained from POST /api/auth/login
+  string meeting_id = 2;
+  string participant_id = 3;  // optional; correlates with the browser tab
+  ClientInfo client = 4;
+}
+
+message ConnectResponse {
+  bool ok = 1;
+  string agent_id = 2;        // opaque session id to send on every AgentEvent
+  string user_id = 3;
+  string display_name = 4;
+  string message = 5;
+  int32 heartbeat_seconds = 6;
+}
+
+message AgentEvent {
+  string agent_id = 1;        // from ConnectResponse
+  oneof event {
+    Heartbeat heartbeat = 2;
+    ProctorSignal signal = 3;
+    SystemInsights insights = 4;
+  }
+}
+
+message Heartbeat {
+  int64 ts = 1;               // epoch millis
+}
+
+// One anti-cheat finding (hidden overlay window, blocklisted process, …).
+message ProctorSignal {
+  string kind = 1;            // HIDDEN_OVERLAY_WINDOW | BLOCKLISTED_PROCESS | MULTIPLE_MONITORS | VIRTUAL_CAMERA | …
+  string severity = 2;        // INFO | WARN | CRITICAL
+  string message = 3;
+  int64 ts = 4;
+}
+
+// Periodic snapshot of the candidate machine for the interviewer.
+message SystemInsights {
+  int32 monitor_count = 1;
+  repeated ProcessInfo processes = 2;
+  int64 ts = 3;
+  bool foreground_changed = 4;
+  string foreground_window = 5;
+}
+
+message ProcessInfo {
+  string name = 1;
+  uint32 pid = 2;
+}
+
+// A command pushed from the interviewer/host down to the desktop agent.
+message HostCommand {
+  string kind = 1;            // lockdown | end | warn | message | rescan
+  bool value = 2;
+  string text = 3;
+}

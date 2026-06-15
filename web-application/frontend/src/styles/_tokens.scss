@@ -1,0 +1,78 @@
+// Google Meet–inspired design tokens
+// Theme model:
+//   • Dark tokens (--m-bg, --m-surface, --m-text, …) are used by the meeting room
+//     (always dark, matches Meet behavior).
+//   • App chrome (login, home, shell, dialogs) uses --m-bg-light / --m-text-ink etc.
+//     Those tokens are remapped when [data-theme="dark"] is on <html>, so the
+//     entire shell flips dark while the meeting room stays consistent.
+:root {
+  // --- Dark surfaces (meeting room) ---
+  --m-bg:           #202124;
+  --m-surface:      #2d2e30;
+  --m-surface-2:    #35363a;
+  --m-elevated:     #3c4043;
+  --m-overlay:      rgba(32, 33, 36, 0.72);
+  --m-divider:      #3c4043;
+  --m-outline:      #5f6368;
+
+  // --- App-chrome surfaces (light by default) ---
+  --m-bg-light:        #ffffff;
+  --m-surface-light:   #f1f3f4;
+  --m-surface-light-2: #e8eaed;
+  --m-divider-light:   #dadce0;
+  --m-hover-ink:       rgba(0, 0, 0, .06);
+
+  // Brand & semantic — Zoomy palette (Google-style hues, our own identity)
+  --m-primary:        #8ab4f8;   // dark-theme primary blue
+  --m-primary-ink:    #202124;
+  --m-primary-700:    #1a73e8;   // light-theme primary blue
+  --m-accent:         #7c5cff;   // Zoomy signature violet (own identity)
+  --m-accent-2:       #00bfa5;   // teal counterpart
+  --m-brand-grad:     linear-gradient(135deg, #1a73e8 0%, #7c5cff 65%, #00bfa5 100%);
+  --m-brand-grad-soft: linear-gradient(135deg, rgba(26,115,232,.10), rgba(124,92,255,.10) 65%, rgba(0,191,165,.10));
+  --m-danger:         #ea4335;
+  --m-warn:           #fbbc04;
+  --m-success:        #34a853;
+
+  // Text (dark theme defaults)
+  --m-text:         #e8eaed;
+  --m-text-muted:   #9aa0a6;
+  --m-text-strong:  #ffffff;
+  // App-chrome text (light by default)
+  --m-text-ink:       #202124;
+  --m-text-ink-muted: #5f6368;
+
+  // Radii
+  --m-r-sm: 8px;
+  --m-r-md: 12px;
+  --m-r-lg: 16px;
+  --m-r-pill: 999px;
+
+  // Elevation
+  --m-e1: 0 1px 2px rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
+  --m-e2: 0 1px 2px rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
+  --m-e3: 0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.30);
+  --m-e4: 0 6px 10px 4px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.30);
+
+  // Type
+  --m-font: "Google Sans", "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  // Layout
+  --m-drawer-w: 320px;
+  --m-controls-h: 80px;
+}
+
+// --- Dark theme: remap app-chrome tokens to dark equivalents ---
+:root[data-theme="dark"] {
+  --m-bg-light:        #1f1f1f;
+  --m-surface-light:   #2a2a2a;
+  --m-surface-light-2: #333333;
+  --m-divider-light:   #3a3a3a;
+  --m-hover-ink:       rgba(255, 255, 255, .08);
+
+  --m-text-ink:        #e8eaed;
+  --m-text-ink-muted:  #9aa0a6;
+
+  // The primary accent is brighter on dark
+  --m-primary-700:     #8ab4f8;
+}

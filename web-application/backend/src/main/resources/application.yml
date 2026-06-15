@@ -1,0 +1,87 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: zoomy-api
+
+  # ---- MongoDB (database-per-bounded-context on same instance) ----
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017}
+      auto-index-creation: true
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: zoomy-api
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.zoomy.api.events"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# ---- gRPC server for the desktop Safe Agent (anti-cheat) ----
+grpc:
+  server:
+    port: ${ZOOMY_GRPC_PORT:9090}
+
+# ---- Zoomy app config ----
+zoomy:
+  databases:
+    auth:    ${MONGO_DB_AUTH:zoomy_auth}
+    meeting: ${MONGO_DB_MEETING:zoomy_meeting}
+    proctor: ${MONGO_DB_PROCTOR:zoomy_proctor}
+    chat:    ${MONGO_DB_CHAT:zoomy_chat}
+
+  jwt:
+    issuer: zoomy
+    # MUST be at least 32 bytes (HS256). Override via env in prod.
+    secret: ${JWT_SECRET:dev-only-change-me-this-secret-must-be-at-least-32-bytes-long}
+    access-ttl-minutes:  15
+    refresh-ttl-days:    7
+
+  cors:
+    allowed-origins: ${ZOOMY_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*,https://localhost:*,https://127.0.0.1:*}
+
+  # ---- Redis-backed API rate limiting (fail-open if Redis is down) ----
+  ratelimit:
+    enabled: ${ZOOMY_RATELIMIT_ENABLED:true}
+    auth:                       # strict bucket for login/signup/refresh (brute-force shield)
+      limit: ${ZOOMY_RATELIMIT_AUTH_LIMIT:10}
+      window-seconds: ${ZOOMY_RATELIMIT_AUTH_WINDOW:60}
+    api:                        # general bucket for the rest of /api/**
+      limit: ${ZOOMY_RATELIMIT_API_LIMIT:150}
+      window-seconds: ${ZOOMY_RATELIMIT_API_WINDOW:60}
+
+  topics:
+    proctor-events: proctor-events
+    alerts:         proctor-alerts
+
+# ---- Make Kafka/Redis optional so dev can run with just Mongo ----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: false
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.zoomy: DEBUG

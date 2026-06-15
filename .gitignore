@@ -1,0 +1,10 @@
+node_modules/
+dist/
+out/
+target/
+.angular/
+.idea/
+.vscode/
+*.log
+.run-logs/
+.DS_Store
