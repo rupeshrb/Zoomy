@@ -113,7 +113,7 @@ boxes are the gRPC hops.
 ```mermaid
 flowchart LR
     subgraph Browser["Interviewer browser"]
-        click["Scan now button"]
+        scanBtn["Scan now button"]
     end
     subgraph Backend["Backend"]
         rc["RoomController.control()"]
@@ -127,14 +127,14 @@ flowchart LR
         rep["report() -> upstream.onNext()"]
     end
 
-    click -->|"WebSocket/STOMP"| rc
+    scanBtn -->|"WebSocket/STOMP"| rc
     rc -->|"in-process"| reg
     reg -->|"gRPC DOWN downstream.onNext()"| sess
     sess -->|"native Win32 (JNA)"| scan
     scan --> rep
     rep -->|"gRPC UP upstream.onNext()"| svc
     svc --> bridge
-    bridge -->|"WebSocket/STOMP"| click
+    bridge -->|"WebSocket/STOMP"| scanBtn
 
     style reg fill:#fde68a,stroke:#b45309
     style sess fill:#fde68a,stroke:#b45309
